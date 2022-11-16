@@ -3,6 +3,7 @@ package jpabook.jpashop.repository;
 import jpabook.jpashop.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -23,21 +24,69 @@ public class OrderRepository {
     }
 
     public List<Order> findAllByString(OrderSearch orderSearch) {
-        String query = "SELECT o " +
-                "FROM Order o join o.member m " +
-                "WHERE o.status = :status " +
-                "AND m.name LIKE :name";
 
-        List<Order> resultList = em.createQuery(query, Order.class)
-                .setParameter("status", orderSearch.getOrderStatus())
-                .setParameter("name", orderSearch.getMemberName())
-                .getResultList();
+        String jpql = "SELECT o FROM Order o INNER JOIN o.member m";
+        boolean isFirstCondition = true;
 
-        return resultList;
+        //주문 상태 검색
+        if (orderSearch.getOrderStatus() != null) {
+            if (isFirstCondition) {
+                jpql += " WHERE";
+                isFirstCondition = false;
+            } else {
+                jpql += " AND";
+            }
+            jpql += " o.status = :status";
+        }
+
+        //회원 이름 검색
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
+            if (isFirstCondition) {
+                jpql += " WHERE";
+                isFirstCondition = false;
+            } else {
+                jpql += " AND";
+            }
+            jpql += " m.name LIKE :name";
+        }
+
+        TypedQuery<Order> query = em.createQuery(jpql, Order.class)
+                .setMaxResults(1000);
+
+        if (orderSearch.getOrderStatus() != null) {
+            query = query.setParameter("status", orderSearch.getOrderStatus());
+        }
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
+            query = query.setParameter("name", orderSearch.getMemberName());
+        }
+
+        return query.getResultList();
     }
 
     public List<Order> findAllByCriteria(OrderSearch orderSearch) {
         return null;
     }
 
+    public List<Order> findAllWithMemberDelivery() {
+        String query = "SELECT o " +
+                       "FROM Order o " +
+                       "JOIN FETCH o.member m " +
+                       "JOIN FETCH o.delivery d";
+
+        List<Order> result = em.createQuery(query, Order.class)
+                                    .getResultList();
+        return result;
+    }
+
+    public List<OrderSimpleQueryDto> findOrderDtos() {
+        String query = "SELECT new jpabook.jpashop.repository.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) " +
+                       "FROM Order o " +
+                       "JOIN o.member m " +
+                       "JOIN o.delivery d";
+
+        List<OrderSimpleQueryDto> resultList = em.createQuery(query, OrderSimpleQueryDto.class)
+                .getResultList();
+
+        return resultList;
+    }
 }
