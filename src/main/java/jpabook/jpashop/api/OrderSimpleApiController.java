@@ -2,9 +2,10 @@ package jpabook.jpashop.api;
 
 import jpabook.jpashop.domain.*;
 import jpabook.jpashop.repository.*;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto;
+import jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,8 @@ public class OrderSimpleApiController {
 
     private final TestBRepository testBRepository;
 
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
+
     @GetMapping(value = "/api/v1/simple-orders")
     public List<Order> ordersV1() {
         List<Order> all = orderRepository.findAllByString(new OrderSearch());
@@ -31,7 +34,16 @@ public class OrderSimpleApiController {
 
     @GetMapping(value = "/api/testa/{id}")
     public TestA findTestA(@PathVariable("id") Long id) {
-        return testARepository.findOne(id);
+        return testARepository.findOne(id); // bytebuddy exception 발생
+    }
+
+    @GetMapping(value = "/api/testa2/{id}")
+    public TestA findTestA2(@PathVariable("id") Long id) {
+        TestA findTestA = testARepository.findOne(id);
+        System.out.println("========== before ==========");
+        findTestA.getTestB().getTestBName();
+        System.out.println("========== after ==========");
+        return findTestA; // bytebuddy exception 발생
     }
 
     @GetMapping(value = "/api/testb/{id}")
@@ -78,7 +90,7 @@ public class OrderSimpleApiController {
 
     @GetMapping(value = "/api/v4/simple-orders")
     public List<OrderSimpleQueryDto> ordersV4() {
-        return orderRepository.findOrderDtos();
+        return orderSimpleQueryRepository.findOrderDtos();
     }
 
 }
