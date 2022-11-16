@@ -15,6 +15,7 @@ public class JpashopApplication {
 	@Bean
 	public Hibernate5Module hibernate5Module() {
 		return new Hibernate5Module();
+		// 이 설정은 Proxy가 초기화 됐으면 JSON으로 출력하지만, 만약 Proxy가 초기화 되어 있지 않다면 그냥 null로 출력한다.
 	}
 
 }
