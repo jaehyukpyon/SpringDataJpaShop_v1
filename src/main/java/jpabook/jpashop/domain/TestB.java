@@ -21,7 +21,6 @@ public class TestB {
 
     private String testBName;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "testB", fetch = FetchType.LAZY)
     private List<TestA> testAList = new ArrayList<>();
 

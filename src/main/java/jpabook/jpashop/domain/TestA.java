@@ -16,6 +16,7 @@ public class TestA {
 
     private String testAName;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testb_id")
     private TestB testB;

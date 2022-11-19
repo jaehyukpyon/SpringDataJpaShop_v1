@@ -54,6 +54,13 @@ public class OrderSimpleApiController {
         return testBRepository.findOne(id);
     }
 
+    @GetMapping(value = "/api/testb2/{id}")
+    public TestB findTestB2(@PathVariable("id") Long id) {
+        TestB find = testBRepository.findOne(id);
+        find.getTestAList().size();
+        return find;
+    }
+
     @Data
     static class SimpleOrderDto {
         private Long orderId;
