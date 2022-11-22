@@ -80,7 +80,7 @@ public class OrderRepository {
     }
 
     public List<OrderSimpleQueryDto> findOrderDtos() {
-        String query = "SELECT new jpabook.jpashop.repository.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) " +
+        String query = "SELECT new jpabook.jpashop.repository.order.simplequery.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) " +
                        "FROM Order o " +
                        "JOIN o.member m " +
                        "JOIN o.delivery d";
@@ -89,5 +89,16 @@ public class OrderRepository {
                 .getResultList();
 
         return resultList;
+    }
+
+    public List<Order> findAllWithItem() {
+        String query = "SELECT DISTINCT o " +
+                       "FROM Order o " +
+                       "JOIN FETCH o.member m " +
+                       "JOIN FETCH o.delivery d " +
+                       "JOIN FETCH o.orderItems oi " +
+                       "JOIN FETCH oi.item i";
+
+        return em.createQuery(query, Order.class).getResultList();
     }
 }
