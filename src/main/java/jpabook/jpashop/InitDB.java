@@ -93,6 +93,42 @@ public class InitDB {
             testA.setTestB(testB);
             em.persist(testA);
         }
+
+        public void dbInitParentChild() {
+            Parent parent1 = new Parent();
+            parent1.setParentId(1000L);
+            parent1.setParentName("parent1");
+            em.persist(parent1);
+
+            Child child1 = new Child();
+            child1.setChildId(1111L);
+            child1.setChildName("child1");
+            child1.setParent(parent1);
+            em.persist(child1);
+
+            Child child2 = new Child();
+            child2.setChildId(2222L);
+            child2.setChildName("child2");
+            child2.setParent(parent1);
+            em.persist(child2);
+
+            Parent parent2 = new Parent();
+            parent2.setParentId(2000L);
+            parent2.setParentName("parent2");
+            em.persist(parent2);
+
+            Child child3 = new Child();
+            child3.setChildId(3333L);
+            child3.setChildName("child3");
+            child3.setParent(parent2);
+            em.persist(child3);
+
+            Child child4 = new Child();
+            child4.setChildId(4444L);
+            child4.setChildName("child4");
+            child4.setParent(parent2);
+            em.persist(child4);
+        }
     }
 
     private final InitService initService;
@@ -103,6 +139,8 @@ public class InitDB {
         initService.dbInit2();
 
         initService.dbInitTestAandB();
+
+        initService.dbInitParentChild();
     }
 
 }
